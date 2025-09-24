@@ -1,19 +1,12 @@
 // services/salesService.js
-const db = require('../db');
+const { Sale, SaleLineItem } = require('../models');
 
-async function createSale({product_id, quantity, total_cost, timestamp}) {
-  const res = await db.query(
-    `INSERT INTO sales(product_id, quantity, total_cost, timestamp) VALUES($1,$2,$3,$4) RETURNING *`,
-    [product_id, quantity, total_cost, timestamp]
-  );
-  return res.rows[0];
+async function createSale({ product_id, quantity, total_cost, timestamp, transaction }) {
+  return await Sale.create({ product_id, quantity, total_cost, timestamp }, { transaction });
 }
 
-async function addSaleLineItem({sale_id, batch_id, quantity, unit_cost}) {
-  await db.query(
-    `INSERT INTO sale_line_items(sale_id, batch_id, quantity, unit_cost) VALUES($1,$2,$3,$4)`,
-    [sale_id, batch_id, quantity, unit_cost]
-  );
+async function addSaleLineItem({ sale_id, batch_id, quantity, unit_cost, transaction }) {
+  return await SaleLineItem.create({ sale_id, batch_id, quantity, unit_cost }, { transaction });
 }
 
 module.exports = { createSale, addSaleLineItem };

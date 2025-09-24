@@ -6,11 +6,19 @@ const basicAuth = require('basic-auth');
 const productService = require('./services/productService');
 const inventoryService = require('./services/inventoryService');
 const salesService = require('./services/salesService');
-const db = require('./db');
+const { initDB, sequelize } = require('./sequelize');
+const { Product, InventoryBatch, Sale, SaleLineItem } = require('./models');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 app.use(bodyParser.json());
+
+(async () => {
+  await initDB();
+  await sequelize.sync({ alter: true }); 
+  // use { force: true } only in dev
+  console.log('✅ Database synced');
+})();
 
 // simple basic auth middleware
 function auth(req, res, next) {

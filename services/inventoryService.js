@@ -1,28 +1,31 @@
 // services/inventoryService.js
-const db = require('../db');
+const { InventoryBatch } = require('../models');
 
-async function createBatch({product_id, quantity, unit_price, timestamp}) {
-  const res = await db.query(
-    `INSERT INTO inventory_batches(product_id, quantity, remaining_quantity, unit_price, timestamp)
-     VALUES($1,$2,$3,$4,$5) RETURNING *`,
-    [product_id, quantity, quantity, unit_price, timestamp]
-  );
-  return res.rows[0];
+async function createBatch({ product_id, quantity, unit_price, timestamp }) {
+  return await InventoryBatch.create({
+    product_id,
+    quantity,
+    remaining_quantity: quantity,
+    unit_price,
+    timestamp
+  });
 }
 
-async function getOldestAvailableBatches(product_id) {
-  const res = await db.query(
-    `SELECT * FROM inventory_batches WHERE product_id=$1 AND remaining_quantity>0 ORDER BY timestamp ASC, created_at ASC`,
-    [product_id]
-  );
-  return res.rows;
+async function getOldestAvailableBatches(product_id, transaction) {
+  return await InventoryBatch.findAll({
+    where: {
+      product_id,
+      remaining_quantity: { [require('sequelize').Op.gt]: 0 }
+    },
+    order: [['timestamp', 'ASC'], ['created_at', 'ASC']],
+    transaction,
+    lock: transaction.LOCK.UPDATE // ensures row-level lock for FIFO
+  });
 }
 
-async function decrementBatchRemaining(batch_id, decrement) {
-  await db.query(
-    `UPDATE inventory_batches SET remaining_quantity = remaining_quantity - $1 WHERE id = $2`,
-    [decrement, batch_id]
-  );
+async function decrementBatchRemaining(batch, decrement, transaction) {
+  batch.remaining_quantity -= decrement;
+  await batch.save({ transaction });
 }
 
 module.exports = { createBatch, getOldestAvailableBatches, decrementBatchRemaining };
