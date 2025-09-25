@@ -18,6 +18,11 @@ const sequelize = new Sequelize(`postgres://${UserName}:${Password}@${Host}:${Po
 });
 
 async function initDB() {
+  console.log('UserName :>> ', UserName);
+  console.log('Password :>> ', Password);
+  console.log('Host :>> ', Host);
+  console.log('Port :>> ', Port);
+  console.log('Database :>> ', Database);
   try {
     await sequelize.authenticate();
     console.log('✅ Database connection established');
