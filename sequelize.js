@@ -7,7 +7,7 @@ const Host = process.env.HOST;
 const Port = process.env.DbPort;
 const Database = process.env.Database;
 
-const sequelize = new Sequelize(`postgres://${UserName}:${Password}@${Host}:${Port}/${Database}`, {
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
   dialectOptions: {
     ssl: {
@@ -18,11 +18,6 @@ const sequelize = new Sequelize(`postgres://${UserName}:${Password}@${Host}:${Po
 });
 
 async function initDB() {
-  console.log('UserName :>> ', UserName);
-  console.log('Password :>> ', Password);
-  console.log('Host :>> ', Host);
-  console.log('Port :>> ', Port);
-  console.log('Database :>> ', Database);
   try {
     await sequelize.authenticate();
     console.log('✅ Database connection established');
