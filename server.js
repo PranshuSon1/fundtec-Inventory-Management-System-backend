@@ -12,6 +12,8 @@ const { Product, InventoryBatch, Sale, SaleLineItem } = require("./models");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+const cors = require("cors");
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(bodyParser.json());
 
 (async () => {

@@ -9,13 +9,17 @@
     "kafka-sim": "node kafka/kafkaProducerSimulator.js"
   },
   "dependencies": {
+    "@radix-ui/react-tabs": "^1.1.13",
     "basic-auth": "^2.0.1",
     "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "kafkajs": "^2.2.4",
+    "lucide-react": "^0.544.0",
     "pg": "^8.16.3",
     "pg-hstore": "^2.3.4",
+    "recharts": "^3.2.1",
     "sequelize": "^6.37.7",
     "uuid": "^9.0.0"
   },
